@@ -158,6 +158,7 @@
   .joyride-tooltip__footer {
     text-align: right; }
   .joyride-tooltip__button--primary {
+    margin-left: 2px;
     background-color: #f04;
     border-radius: 4px;
     color: #fff;
