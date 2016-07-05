@@ -38,7 +38,6 @@
 
 .joyride-overlay {
   bottom: 0;
-  cursor: pointer;
   left: 0;
   position: absolute;
   right: 0;
@@ -158,12 +157,12 @@
   .joyride-tooltip__footer {
     text-align: right; }
   .joyride-tooltip__button--primary {
-    margin-left: 2px;
     background-color: #f04;
     border-radius: 4px;
     color: #fff;
     outline: none;
     padding: 6px 12px;
+    margin-left: 2px;
     text-decoration: none;
     -webkit-transition: background-color 0.2s ease-in-out;
     transition: background-color 0.2s ease-in-out; }
