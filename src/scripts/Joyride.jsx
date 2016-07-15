@@ -538,7 +538,7 @@ export default class Joyride extends React.Component {
   toggleTooltip(show, index, action) {
     const props = this.props;
     const newIndex = (index !== undefined ? index : this.state.index);    
-    const stepIndex = props.steps[newIndex] ? newIndex : 1;
+    const stepIndex = props.steps[newIndex] ? newIndex : 0;
     let play = props.steps[stepIndex] ? this.state.play : false;
     if ((this.state.showTours && action === "close") ||
         (this.state.showTours && action === "next" && index === props.steps.length)) {
