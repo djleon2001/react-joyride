@@ -459,8 +459,11 @@ export default class Joyride extends React.Component {
 
     if (typeof props.callback === 'function') {
       props.callback({
+        action: 'show',
         type: 'step:before',
-        step: props.steps[state.index]
+        step: props.steps[state.index],
+        stepIndexToShow: state.index,
+        stepToShow: props.steps[state.index]
       });
     }
 
@@ -560,8 +563,11 @@ export default class Joyride extends React.Component {
 
         if (typeof props.callback === 'function') {
           props.callback({
+            action: action,
             type: 'step:after',
-            step: props.steps[lastIndex]
+            step: props.steps[lastIndex],
+            stepIndexToShow: index,
+            stepToShow: props.steps[index]
           });
         }
       }
@@ -573,9 +579,11 @@ export default class Joyride extends React.Component {
 
         if (typeof props.callback === 'function') {
           props.callback({
+            action: action,
             type: 'finished',
             steps: props.steps,
-            skipped: this.state.skipped
+            skipped: this.state.skipped,
+            stepIndexToShow: 0
           });
         }
       }

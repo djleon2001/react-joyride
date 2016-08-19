@@ -73,6 +73,9 @@ export default class Beacon extends React.Component {
         }
       }
     }
+    if (stepStyles.zIndex) {
+      styles.beacon.zIndex = stepStyles.zIndex;        
+    }
 
     return (
       <a

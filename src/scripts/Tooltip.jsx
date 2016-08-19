@@ -143,6 +143,10 @@ export default class Tooltip extends React.Component {
         styles.header.borderColor = stepStyles.mainColor;
       }
 
+      if (stepStyles.zIndex) {
+        styles.tooltip.zIndex = stepStyles.zIndex;        
+      }
+
       if (stepStyles.textAlign) {
         styles.tooltip.textAlign = stepStyles.textAlign;
       }
@@ -281,7 +285,8 @@ export default class Tooltip extends React.Component {
             <span 
               className="joyride-tooltip__footer-checkbox"
               style={styles.checkboxLabel} 
-              data-type='showTours'>{props.buttons.disable}
+              data-type='showTours'
+              onClick={props.onClick}>{props.buttons.disable}
             </span>
           </div>        
           {output.skip}
