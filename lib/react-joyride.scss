@@ -1,6 +1,6 @@
 $joyride-color: #f04 !default;
 $joyride-zindex: 2501 !default;
-$joyride-overlay-color: rgba(#000, 0.5) !default;
+$joyride-overlay-color: rgba(#000, 0.1) !default;
 
 $joyride-beacon-color: $joyride-color !default;
 $joyride-beacon-size: 20px !default;
@@ -31,7 +31,7 @@ $joyride-header-border-width: 1px !default;
 
 $joyride-button-bg-color: $joyride-color !default;
 $joyride-button-color: #fff !default;
-$joyride-button-border-radius: 2x !default;
+$joyride-button-border-radius: 2px !default;
 
 $joyride-back-button-color: $joyride-color !default;
 $joyride-skip-button-color: #ccc !default;
