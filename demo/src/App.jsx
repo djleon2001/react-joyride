@@ -15,7 +15,13 @@ export default class Demo extends React.Component {
           title: 'Title only steps — As they say: Make the font bigger!',
           textAlign: 'center',
           selector: '.projects .list',
-          position: 'top'
+          position: 'top',
+          positionTooltip: 'bottom',
+          style: {
+            beacon: {
+              zIndex:3000,
+            }            
+          }
         },
         {
           title: 'Our Mission',
@@ -24,12 +30,15 @@ export default class Demo extends React.Component {
           position: 'bottom',
           allowClicksThruHole: true,
           style: {
+            zIndex:3000,
             beacon: {
-              offsetY: 20
+              offsetY: 20,
+              display:'none',
+              zIndex:3000,
             },
             button: {
               display: 'none',
-            }
+            }            
           }
         },
         {
@@ -42,6 +51,7 @@ export default class Demo extends React.Component {
           text: 'We are the people',
           selector: '.about h2 span',
           position: 'left',
+          positionTooltip: 'top',
           style: {
             beacon: {
               inner: '#27e200',
@@ -57,6 +67,7 @@ export default class Demo extends React.Component {
           text: 'Text only steps — Because sometimes you don\'t really need a proper heading',
           selector: '.demo__footer a',
           position: 'top',
+          positionTooltip: 'top',
           isFixed: true,
           style: {
             beacon: '#000'

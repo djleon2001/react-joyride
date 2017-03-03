@@ -34,14 +34,15 @@ export default class JoyrideBeacon extends React.Component {
       beacon: {
         left: xPos,
         position: step.isFixed === true ? 'fixed' : 'absolute',
-        top: yPos
+        top: yPos,
+        zIndex : {}
       },
       inner: {},
-      outer: {}
+      outer: {},
+      display : {}
     };
     const stepStyles = step.style || {};
     let rgb;
-
     /* istanbul ignore else */
     if (stepStyles.beacon) {
       if (typeof stepStyles.beacon === 'string') {
@@ -65,6 +66,14 @@ export default class JoyrideBeacon extends React.Component {
             backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`,
             borderColor: stepStyles.beacon.outer
           };
+        }
+
+        if (stepStyles.beacon.display) {
+          styles.inner.display = stepStyles.beacon.display;
+          styles.outer.display = stepStyles.beacon.display;
+        }
+        if (stepStyles.beacon.zIndex) {
+          styles.beacon.zIndex = stepStyles.beacon.zIndex;;
         }
       }
     }

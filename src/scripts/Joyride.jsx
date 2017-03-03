@@ -726,7 +726,7 @@ class Joyride extends React.Component {
    * @returns {number}
    */
   getScrollTop() {
-    const { index, yPos } = this.state;
+    const { index, yPos, yPosTooltip, shouldRenderTooltip } = this.state;
     const { scrollOffset, steps } = this.props;
     const step = steps[index];
     const target = this.getStepTargetElement(step);
@@ -737,12 +737,13 @@ class Joyride extends React.Component {
 
     const rect = target.getBoundingClientRect();
     const targetTop = rect.top + (window.pageYOffset || document.documentElement.scrollTop);
-    const position = this.calcPosition(step);
+    const position = shouldRenderTooltip ? this.calcPositionTooltip(step) : this.calcPosition(step);
+    const yPosition = shouldRenderTooltip ? yPosTooltip : yPos;
     let scrollTo = 0;
 
     /* istanbul ignore else */
     if (/^top/.test(position)) {
-      scrollTo = Math.floor(yPos - scrollOffset);
+      scrollTo = Math.floor(yPosition - scrollOffset);
     }
     else if (/^bottom|^left|^right/.test(position)) {
       scrollTo = Math.floor(targetTop - scrollOffset);
@@ -977,17 +978,23 @@ class Joyride extends React.Component {
       x: -1000,
       y: -1000
     };
+    const placementTooltip = {
+      x: -1000,
+      y: -1000
+    };
 
     /* istanbul ignore else */
     if (step && (standaloneData || (isRunning && steps[index]))) {
       const offsetX = nested.get(step, 'style.beacon.offsetX') || 0;
       const offsetY = nested.get(step, 'style.beacon.offsetY') || 0;
-      const position = this.calcPosition(step);
+      let position = this.calcPosition(step);      
       const body = document.body.getBoundingClientRect();
       const scrollTop = step.isFixed === true ? 0 : body.top;
       const component = this.getElementDimensions();
       const rect = target.getBoundingClientRect();
-
+      
+      // Calculate Beacon
+       
       // Calculate x position
       if (/^left/.test(position)) {
         placement.x = rect.left - (displayTooltip ? component.width + tooltipOffset : (component.width / 2) + offsetX);
@@ -1009,7 +1016,7 @@ class Joyride extends React.Component {
       else {
         placement.y = (rect.top - scrollTop);
       }
-
+      
       /* istanbul ignore else */
       if (/^bottom|^top/.test(position)) {
         if (/left/.test(position)) {
@@ -1020,10 +1027,46 @@ class Joyride extends React.Component {
         }
       }
 
+      // Calculate Tooltip
+      position = this.calcPositionTooltip(step); 
+      // Calculate x position
+      if (/^left/.test(position)) {
+        placementTooltip.x = rect.left - (displayTooltip ? component.width + tooltipOffset : (component.width / 2) + offsetX);
+      }
+      else if (/^right/.test(position)) {
+        placementTooltip.x = (rect.left + rect.width) - (displayTooltip ? -tooltipOffset : (component.width / 2) - offsetX);
+      }
+      else {
+        placementTooltip.x = rect.left + ((rect.width / 2) - (component.width / 2));
+      }
+
+      // Calculate y position
+      if (/^top/.test(position)) {
+        placementTooltip.y = (rect.top - scrollTop) - (displayTooltip ? component.height + tooltipOffset : (component.height / 2) + offsetY);
+      }
+      else if (/^bottom/.test(position)) {
+        placementTooltip.y = (rect.top - scrollTop) + (rect.height - (displayTooltip ? -tooltipOffset : (component.height / 2) - offsetY));
+      }
+      else {
+        placementTooltip.y = (rect.top - scrollTop);
+      }
+      
+      /* istanbul ignore else */
+      if (/^bottom|^top/.test(position)) {
+        if (/left/.test(position)) {
+          placementTooltip.x = rect.left - (displayTooltip ? tooltipOffset : component.width / 2);
+        }
+        else if (/right/.test(position)) {
+          placementTooltip.x = rect.left + (rect.width - (displayTooltip ? component.width - tooltipOffset : component.width / 2));
+        }
+      }
+
       this.setState({
         shouldRedraw: false,
         xPos: this.preventWindowOverflow(Math.ceil(placement.x), 'x', component.width, component.height),
-        yPos: this.preventWindowOverflow(Math.ceil(placement.y), 'y', component.width, component.height)
+        yPos: this.preventWindowOverflow(Math.ceil(placement.y), 'y', component.width, component.height),
+        xPosTooltip: this.preventWindowOverflow(Math.ceil(placementTooltip.x), 'x', component.width, component.height),
+        yPosTooltip: this.preventWindowOverflow(Math.ceil(placementTooltip.y), 'y', component.width, component.height)
       });
     }
   }
@@ -1043,6 +1086,39 @@ class Joyride extends React.Component {
     const rect = target.getBoundingClientRect();
     const { height, width = DEFAULTS.minWidth } = this.getElementDimensions();
     let position = step.position || DEFAULTS.position;
+
+    if (/^left/.test(position) && rect.left - (width + tooltipOffset) < 0) {
+      position = 'top';
+    }
+    else if (/^right/.test(position) && (rect.left + rect.width + (width + tooltipOffset)) > body.getBoundingClientRect().width) {
+      position = 'bottom';
+    }
+
+    if (/^top/.test(position) && (rect.top + body.scrollTop) - (height + tooltipOffset) < 0) {
+      position = 'bottom';
+    }
+    else if (/^bottom/.test(position) && (rect.bottom + body.scrollTop) + (height + tooltipOffset) > getDocHeight()) {
+      position = 'top';
+    }
+
+    return position;
+  }
+
+  /**
+   * Update position for overflowing elements.
+   *
+   * @private
+   * @param {Object} step
+   *
+   * @returns {string}
+   */
+  calcPositionTooltip(step) {
+    const { tooltipOffset } = this.props;
+    const body = document.body;
+    const target = this.getStepTargetElement(step);
+    const rect = target.getBoundingClientRect();
+    const { height, width = DEFAULTS.minWidth } = this.getElementDimensions();
+    let position = step.positionTooltip || step.position || DEFAULTS.position;
 
     if (/^left/.test(position) && rect.left - (width + tooltipOffset) < 0) {
       position = 'top';
@@ -1123,7 +1199,7 @@ class Joyride extends React.Component {
    * @returns {boolean|ReactComponent}
    */
   createComponent() {
-    const { index, shouldRedraw, shouldRenderTooltip, standaloneData, xPos, yPos } = this.state;
+    const { index, shouldRedraw, shouldRenderTooltip, standaloneData, xPos, yPos, xPosTooltip, yPosTooltip } = this.state;
     const {
       disableOverlay,
       holePadding,
@@ -1164,6 +1240,7 @@ class Joyride extends React.Component {
 
     if (shouldRenderTooltip || standaloneData) {
       const position = this.calcPosition(step);
+      const positionTooltip = this.calcPositionTooltip(step);
 
       /* istanbul ignore else */
       if (!standaloneData) {
@@ -1203,15 +1280,15 @@ class Joyride extends React.Component {
         buttons,
         disableOverlay,
         holePadding,
-        position,
+        position:positionTooltip,
         selector: sanitizeSelector(step.selector),
         showOverlay: shouldShowOverlay,
         step,
         standalone: Boolean(standaloneData),
         target,
         type,
-        xPos,
-        yPos,
+        xPos:xPosTooltip,
+        yPos:yPosTooltip,
         onClick: this.onClickTooltip,
         onRender: this.onRenderTooltip
       });

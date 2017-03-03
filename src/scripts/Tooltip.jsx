@@ -261,6 +261,9 @@ export default class JoyrideTooltip extends React.Component {
         })}")`;
         styles.tooltip.backgroundColor = stepStyles.backgroundColor;
       }
+      if (stepStyles.zIndex) {
+        styles.tooltip.zIndex = stepStyles.zIndex;
+      }
 
       if (stepStyles.borderRadius) {
         styles.tooltip.borderRadius = stepStyles.borderRadius;
@@ -436,7 +439,6 @@ export default class JoyrideTooltip extends React.Component {
     if (!target) {
       return undefined;
     }
-
     const opts = this.state.opts;
     const styles = this.state.styles;
     const output = {};
@@ -524,8 +526,12 @@ export default class JoyrideTooltip extends React.Component {
     const overlayStyles = {
       cursor: disableOverlay ? 'default' : 'pointer',
       height: document.body.clientHeight,
-      pointerEvents: this.state.mouseOverHole ? 'none' : 'auto',
+      pointerEvents: this.state.mouseOverHole ? 'none' : 'auto'
     };
+    if (styles.tooltip.zIndex) {
+      overlayStyles.zIndex = styles.tooltip.zIndex;
+    }
+
 
     return (
       <div
